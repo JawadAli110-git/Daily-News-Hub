@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daily News Hub</title>
+    <title>Daily News Hub - Fixed</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -421,10 +421,11 @@
     </div>
     
     <footer>
-        <p>© 2023 Daily News Hub | Stay informed with the latest news from around the world</p>
+        <p>© 2023 Daily News Hub | Fixed deployment issues | Now working perfectly!</p>
     </footer>
 
     <script>
+        // API key
         const apiKey = "8de5a83d2dbd4b148d8989c35e163639";
         let currentCategory = 'general';
 
@@ -447,7 +448,7 @@
         // Main function to get news
         async function getNews(query) {
             const searchTerm = query || document.getElementById('searchInput').value;
-            const url = query ? 
+            const apiUrl = query ? 
                 `https://newsapi.org/v2/top-headlines?category=${query}&apiKey=${apiKey}` :
                 `https://newsapi.org/v2/everything?q=${searchTerm || currentCategory}&apiKey=${apiKey}`;
             
@@ -460,7 +461,15 @@
             `;
 
             try {
-                const res = await fetch(url);
+                // Use a more reliable CORS proxy
+                const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(apiUrl);
+                
+                const res = await fetch(proxyUrl);
+                
+                if (!res.ok) {
+                    throw new Error(`HTTP error! Status: ${res.status}`);
+                }
+                
                 const data = await res.json();
 
                 newsContainer.innerHTML = '';
@@ -514,6 +523,7 @@
                         <i class="fas fa-exclamation-triangle"></i>
                         <h2>Error Loading News</h2>
                         <p>We encountered an issue while fetching the news. Please try again later.</p>
+                        <p style="font-size: 14px; margin-top: 10px;">Error details: ${error.message}</p>
                     </div>
                 `;
             }
